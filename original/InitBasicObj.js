@@ -28,7 +28,7 @@ function InitBasicObj(){
 	var AxesHelper3d = new THREE.AxesHelper(100);
 	AxesHelper3d.position.y = 0.01;
 	//scene3d.add( GridHelper3d );
-	scene3d.add( AxesHelper3d );
+	//scene3d.add( AxesHelper3d );
 				
 	//- MATERIALS
 
@@ -37,8 +37,8 @@ function InitBasicObj(){
 	moduleTexture.threeTextures["texture_world"].texture.wrapT = THREE.RepeatWrapping;
 	moduleTexture.threeTextures["texture_world"].texture.flipY = false;
 		
-	appMc3d["materialWorldS"] 	= new THREE.MeshLambertMaterial({map:moduleTexture.threeTextures["texture_world"].texture, skinning:true, color: 0xffffff, emissive: 0x000000});
-	appMc3d["materialWorld"]	= new THREE.MeshLambertMaterial({map:moduleTexture.threeTextures["texture_world"].texture, skinning:false, color: 0xffffff, emissive: 0x000000});
+	appMc3d["materialWorldS"] 	= new THREE.MeshLambertMaterial({map:moduleTexture.threeTextures["texture_world"].texture, skinning:true, color: 0xffffff, emissive: 0x000000});	
+	appMc3d["materialWorld"]	= new THREE.MeshLambertMaterial({map:moduleTexture.threeTextures["texture_world"].texture, skinning:false, color: 0xffffff, emissive: 0x000000});	
 	
 	appMc3d["materialDetect"]	= new THREE.MeshLambertMaterial({color: 0xff0000, emissive: 0x000000});	
 			
@@ -259,12 +259,12 @@ function InitBasicObj(){
 	//- EVENT
 	
 	appMc.mcBgOverlay.interactive = true;				
-	// appMc.mcBgOverlay.on('pointerdown', StageDown);
-	// appMc.mcBgOverlay.on('pointermove', StageMove);
-	// appMc.mcBgOverlay.on('pointerup', StageUp);
-	// appMc.mcBgOverlay.on('pointerout', StageUp);
-	// appMc.mcBgOverlay.on('pointeroutside', StageUp);
-	// appMc.mcBgOverlay.on('touchendoutside', StageUp);
+	appMc.mcBgOverlay.on('pointerdown', StageDown);
+	appMc.mcBgOverlay.on('pointermove', StageMove);
+	appMc.mcBgOverlay.on('pointerup', StageUp);
+	appMc.mcBgOverlay.on('pointerout', StageUp);
+	appMc.mcBgOverlay.on('pointeroutside', StageUp);
+	appMc.mcBgOverlay.on('touchendoutside', StageUp);
 	
 	appMc.mcBtnSound.interactive = true;				
 	appMc.mcBtnSound.on('pointerup', BtnGlobalSound);

@@ -29,13 +29,10 @@ function AppResize(e){
 	//- POSITION OBJ
 	
 	appMc.mcGame.scale.set(1, 1);	
-	appMc.mcUI.scale.set(1, 1);
-
-	camera3d.position.x = 0;
-	camera3d.position.y = 62;
-	camera3d.position.z = 13;
-
-	if(appObj.mainWidth<appObj.mainHeight){
+	appMc.mcUI.scale.set(1, 1);	
+	
+	if(appObj.mainWidth<appObj.mainHeight){	
+		
 		appMc.mcGame.scale.x = appObj.canvasWidth/1280;
 		appMc.mcGame.scale.y = appMc.mcGame.scale.x;
 		if(appMc.mcGame.scale.y*1280 < appObj.canvasHeight){
@@ -49,8 +46,13 @@ function AppResize(e){
 			appMc.mcUI.scale.y = appObj.canvasHeight/1280;
 			appMc.mcUI.scale.x = appMc.mcUI.scale.y;
 		}
-
-		camera3d.fov = 50;
+			
+		camera3d.position.x = -2;
+		camera3d.position.y = 2;
+		camera3d.position.z = 0;
+		camera3d.fov = 50;	
+		camera3d.updateProjectionMatrix();
+		camera3d.lookAt(new THREE.Vector3(0, 0, 0));
 		
 		appMc.mcDownload.x = 0;
 		appMc.mcDownload.y = -145+appObj.canvasHeight*0.5/appMc.mcUI.scale.y;
@@ -85,8 +87,13 @@ function AppResize(e){
 			appMc.mcUI.scale.y = appObj.canvasHeight/720;
 			appMc.mcUI.scale.x = appMc.mcUI.scale.y;
 		}
-
-		camera3d.fov = 25;
+			
+		camera3d.position.x = -2;
+		camera3d.position.y = 2;
+		camera3d.position.z = 0;
+		camera3d.fov = 25;	
+		camera3d.updateProjectionMatrix();
+		camera3d.lookAt(new THREE.Vector3(0, 0, 0));
 		
 		appMc.mcDownload.x = -215+appObj.canvasWidth*0.5/appMc.mcUI.scale.y;
 		appMc.mcDownload.y = -125+appObj.canvasHeight*0.5/appMc.mcUI.scale.y;
@@ -105,8 +112,6 @@ function AppResize(e){
 		appMc.mcHelper.x = 0;
 		appMc.mcHelper.y = 150-appObj.canvasHeight*0.5/appMc.mcUI.scale.y;
 		appMc.mcHelper.scale.set(1);
+				
 	}
-
-	camera3d.updateProjectionMatrix();
-	camera3d.lookAt(new THREE.Vector3(0, 0, -10));
 }

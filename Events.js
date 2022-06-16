@@ -7,27 +7,33 @@ async function LoadModels() {
 function LoadPlateModels() {
     return new Promise((resolve, reject) => {
         var loaderGLTF = new THREE.GLTFLoader();
+
+        appMc3d["mcPlates"] = new THREE.Group();
+        appMc3d["groupLevelCamera"].add(appMc3d["mcPlates"]);
+
         loaderGLTF.parse(dataJson["mPlate"], "", function (gltf) {
-            var i, j;
+            for (let i = 1; i <= 3; i++) {
+                let plate = appMc3d["mcPlate" + i] = new THREE.Group();
+                plate.gltf = gltf;
+                plate.scene = gltf.scene.clone();
+                plate.add(plate.scene);
+                appMc3d["mcPlates"].add(plate);
 
-            appMc3d["mcPlate"] = new THREE.Group();
-            appMc3d["mcPlate"].gltf = gltf;
-            appMc3d["mcPlate"].scene = gltf.scene;
-            appMc3d["mcPlate"].add(gltf.scene);
-            appMc3d["groupLevelCamera"].add(appMc3d["mcPlate"]);
+                plate.position.x = (i - 2) * 13;
 
-            gltf.scene.traverse(function (object) {
-                if (object.isSkinnedMesh) {
-                    object.material = appMc3d["materialWorldS"];
-                } else if (object.isMesh) {
-                    object.material = appMc3d["materialWorld"];
-                }
+                gltf.scene.traverse(function (object) {
+                    if (object.isSkinnedMesh) {
+                        object.material = appMc3d["materialWorldS"];
+                    } else if (object.isMesh) {
+                        object.material = appMc3d["materialWorld"];
+                    }
 
-                object.castShadow = true;
-                object.receiveShadow = true;
+                    object.castShadow = true;
+                    object.receiveShadow = true;
 
-                appMc3d["mcPlate"][object.name] = object;
-            });
+                    appMc3d["mcPlate" + i][object.name] = object;
+                });
+            }
 
             resolve();
         }, undefined, function (error) {
