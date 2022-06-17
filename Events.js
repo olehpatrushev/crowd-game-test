@@ -71,6 +71,9 @@ function LoadManModels() {
 
             appMc3d["mcMan"].mixer = new THREE.AnimationMixer(gltf.scene);
 
+            // debugger;
+            // appMc3d["mcMan"].mixer.clipAction(gltf.animations[17]).play();
+            console.log(gltf.animations);
             for (i = 0; i < gltf.animations.length; i++) {
                 appMc3d["mcMan"].mixer.clipAction(gltf.animations[i]).play();
             }
@@ -108,9 +111,9 @@ function InitGame() {
     InitAnimation();
 
     //- EF
-
-    window.orbitControls = new THREE.OrbitControls(camera3d, AppCanvas);
-    window.orbitControls.update();
+    //
+    // window.orbitControls = new THREE.OrbitControls(camera3d, AppCanvas);
+    // window.orbitControls.update();
 
     StageEF();
 }

@@ -3,6 +3,7 @@
 
 function StageEF() {
     appObj.time_current = performance.now();
+    let timeSpent = appObj.time_current - appObj.time_old;
     if (appObj.time_current - appObj.time_old > 25) {
         if (!pauseGlobal) {
             appObj.time_old = appObj.time_current;
@@ -13,6 +14,11 @@ function StageEF() {
             var objTemp;
             var objTempExtra;
             var objTempHero = appMc3d["mcMan"];
+
+            objTempHero.mixer.update(timeSpent / 1000);
+
+            // SeekAnimationTime(objTempHero.mixer, 0 / 30);
+
 
             //console.time("Code");
 
@@ -251,7 +257,7 @@ function StageEF() {
         }
     }
 
-    window.orbitControls.update();
+    // window.orbitControls.update();
 
     //- RAF
     window.requestAnimationFrame(StageEF);
