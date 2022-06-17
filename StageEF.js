@@ -13,9 +13,9 @@ function StageEF() {
             var i, j, k, d, a;
             var objTemp;
             var objTempExtra;
-            var objTempHero = appMc3d["mcMan"];
-
-            objTempHero.mixer.update(timeSpent / 1000);
+            // var objTempHero = appMc3d["mcMan"];
+            //
+            // objTempHero.mixer.update(timeSpent / 1000);
 
             // SeekAnimationTime(objTempHero.mixer, 0 / 30);
 
@@ -221,13 +221,13 @@ function StageEF() {
 
             objTemp = appMc3d["groupLevelCamera"];
 
-            objTemp.to_x = -objTempHero.position.x;
-            objTemp.to_y = -objTempHero.position.y;
-            objTemp.to_z = -objTempHero.position.z;
-
-            objTemp.position.x = objTemp.to_x - 0.85 * (objTemp.to_x - objTemp.position.x);
-            objTemp.position.y = objTemp.to_y - 0.85 * (objTemp.to_y - objTemp.position.y);
-            objTemp.position.z = objTemp.to_z - 0.85 * (objTemp.to_z - objTemp.position.z);
+            // objTemp.to_x = -objTempHero.position.x;
+            // objTemp.to_y = -objTempHero.position.y;
+            // objTemp.to_z = -objTempHero.position.z;
+            //
+            // objTemp.position.x = objTemp.to_x - 0.85 * (objTemp.to_x - objTemp.position.x);
+            // objTemp.position.y = objTemp.to_y - 0.85 * (objTemp.to_y - objTemp.position.y);
+            // objTemp.position.z = objTemp.to_z - 0.85 * (objTemp.to_z - objTemp.position.z);
 
             //-
 
@@ -257,7 +257,7 @@ function StageEF() {
         }
     }
 
-    // window.orbitControls.update();
+    ENABLE_ORBIT_CONTROLS && window.orbitControls.update();
 
     //- RAF
     window.requestAnimationFrame(StageEF);

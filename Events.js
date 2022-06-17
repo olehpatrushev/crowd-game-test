@@ -1,3 +1,5 @@
+const plateMapping = {};
+
 async function LoadModels() {
     await LoadPlateModels();
     await LoadManModels();
@@ -12,21 +14,24 @@ function LoadPlateModels() {
         appMc3d["groupLevelCamera"].add(appMc3d["mcPlates"]);
 
         loaderGLTF.parse(dataJson["mPlate"], "", function (gltf) {
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 0; i <= 2; i++) {
                 let plate = appMc3d["mcPlate" + i] = new THREE.Group();
                 plate.gltf = gltf;
                 plate.scene = gltf.scene.clone();
                 plate.add(plate.scene);
                 appMc3d["mcPlates"].add(plate);
 
-                plate.position.x = (i - 2) * 13;
+                plate.position.x = (i - 1) * 13;
+
+                plate.isPlate = true;
+                plate.plateIndex = i;
 
                 gltf.scene.traverse(function (object) {
-                    if (object.isSkinnedMesh) {
-                        object.material = appMc3d["materialWorldS"];
-                    } else if (object.isMesh) {
-                        object.material = appMc3d["materialWorld"];
-                    }
+                    // if (object.isSkinnedMesh) {
+                    //     object.material = appMc3d["materialWorldS"];
+                    // } else if (object.isMesh) {
+                    //     object.material = appMc3d["materialWorld"];
+                    // }
 
                     object.castShadow = true;
                     object.receiveShadow = true;
@@ -45,40 +50,52 @@ function LoadPlateModels() {
 function LoadManModels() {
     return new Promise((resolve, reject) => {
         var loaderGLTF = new THREE.GLTFLoader();
+
+        appMc3d["mcMen"] = new THREE.Group();
+        appMc3d["groupLevelCamera"].add(appMc3d["mcMen"]);
+
         loaderGLTF.parse(dataJson["mMan"], "", function (gltf) {
-            var i, j;
+            for (let i = 0; i < 32; i++) {
+                let man = appMc3d["mcMan" + i] = new THREE.Group();
+                man.gltf = gltf;
+                man.scene = THREE.SkeletonUtils.clone(gltf.scene);
+                man.add(man.scene);
+                appMc3d["mcMen"].add(man);
 
-            appMc3d["mcMan"] = new THREE.Group();
-            appMc3d["mcMan"].gltf = gltf;
-            appMc3d["mcMan"].scene = gltf.scene;
-            appMc3d["mcMan"].add(gltf.scene);
-            appMc3d["groupLevelCamera"].add(appMc3d["mcMan"]);
+                man.manIndex = i;
+                man.isMan = true;
 
-            gltf.scene.traverse(function (object) {
-                if (object.isSkinnedMesh) {
-                    object.material = appMc3d["materialWorldS"];
-                } else if (object.isMesh) {
-                    object.material = appMc3d["materialWorld"];
+                let command = 0;
+                if (Math.floor(i / 4) % 2 == 1) {
+                    command = 1;
                 }
 
-                object.castShadow = true;
-                object.receiveShadow = true;
+                man.scene.traverse(function (object) {
+                    object.material = appMc3d["materialManTypeS" + command];
 
-                appMc3d["mcMan"][object.name] = object;
+                    object.castShadow = true;
+                    object.receiveShadow = true;
 
+                    man[object.name] = object;
+                });
 
-            });
+                man.mixer = new THREE.AnimationMixer(man.scene);
 
-            appMc3d["mcMan"].mixer = new THREE.AnimationMixer(gltf.scene);
+                for (let p = 0; p < gltf.animations.length; p++) {
+                    man.mixer.clipAction(gltf.animations[p]).play();
+                }
 
-            // debugger;
-            // appMc3d["mcMan"].mixer.clipAction(gltf.animations[17]).play();
-            console.log(gltf.animations);
-            for (i = 0; i < gltf.animations.length; i++) {
-                appMc3d["mcMan"].mixer.clipAction(gltf.animations[i]).play();
+                SeekAnimationTime(man.mixer, 0);
+
+                if (i < 16) {
+                    PlaceManToPlate(man, appMc3d["mcPlate0"]);
+                } else {
+                    PlaceManToPlate(man, appMc3d["mcPlate1"]);
+                }
             }
 
-            SeekAnimationTime(appMc3d["mcMan"].mixer, 0);
+            renderer3d.clear(true, true, true);
+            renderer3d.compile(appMc3d["mcMen"], camera3d);
 
             resolve();
         }, undefined, function (error) {
@@ -86,6 +103,37 @@ function LoadManModels() {
         });
     });
 }
+
+//---------------------------------------------------------------------------------
+function PlaceManToPlate(man, plate) {
+    let placeFree = false;
+    let index = null;
+    if (!(plate.plateIndex in plateMapping)) {
+        placeFree = true;
+        index = 0;
+        plateMapping[plate.plateIndex] = {};
+    } else {
+        for (let i = 0; i < 16; i++) {
+            if (!(i in plateMapping[plate.plateIndex]) || plateMapping[plate.plateIndex][i] === null) {
+                index = i;
+                placeFree = true;
+                break;
+            }
+        }
+    }
+
+    if (placeFree) {
+        plateMapping[plate.plateIndex][index] = man.manIndex;
+        man.position.x = plate.position.x;
+        if (index % 2 == 0) {
+            man.position.x -= 1;
+        } else {
+            man.position.x += 1;
+        }
+        man.position.z = -1.3 * Math.floor(index / 2);
+    }
+}
+
 
 //-----------------------------------------------------
 
@@ -112,8 +160,10 @@ function InitGame() {
 
     //- EF
     //
-    // window.orbitControls = new THREE.OrbitControls(camera3d, AppCanvas);
-    // window.orbitControls.update();
+    if (ENABLE_ORBIT_CONTROLS) {
+        window.orbitControls = new THREE.OrbitControls(camera3d, AppCanvas);
+        window.orbitControls.update();
+    }
 
     StageEF();
 }
