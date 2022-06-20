@@ -1,1 +1,1 @@
-const ENABLE_ORBIT_CONTROLS = true;
+const ENABLE_ORBIT_CONTROLS = false;

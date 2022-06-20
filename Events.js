@@ -1,4 +1,6 @@
 const plateMapping = {};
+var currentMovement = null;
+var menToMove = [];
 
 async function LoadModels() {
     await LoadPlateModels();
@@ -26,12 +28,10 @@ function LoadPlateModels() {
                 plate.isPlate = true;
                 plate.plateIndex = i;
 
-                gltf.scene.traverse(function (object) {
-                    // if (object.isSkinnedMesh) {
-                    //     object.material = appMc3d["materialWorldS"];
-                    // } else if (object.isMesh) {
-                    //     object.material = appMc3d["materialWorld"];
-                    // }
+                plate.traverse(function (object) {
+                    if (object.isMesh) {
+                        object.material = appMc3d["materialPlate"].clone();
+                    }
 
                     object.castShadow = true;
                     object.receiveShadow = true;
@@ -70,6 +70,8 @@ function LoadManModels() {
                     command = 1;
                 }
 
+                man.command = command;
+
                 man.scene.traverse(function (object) {
                     object.material = appMc3d["materialManTypeS" + command];
 
@@ -93,9 +95,6 @@ function LoadManModels() {
                     PlaceManToPlate(man, appMc3d["mcPlate1"]);
                 }
             }
-
-            renderer3d.clear(true, true, true);
-            renderer3d.compile(appMc3d["mcMen"], camera3d);
 
             resolve();
         }, undefined, function (error) {
@@ -221,59 +220,145 @@ function StageDown(e) {
                 //appSounds["sBg"].fade(0, appSounds["sBg"].volume(), 1000);
             }
 
-            appMc.mcJoystickCursor.visible = false;
+            // appMc.mcJoystickCursor.visible = false;
         }
 
         if (stateGame == 1) {
             mouse.isDown = true;
 
-            mouse.x = mouse.downX = e.data.getLocalPosition(appMc.mcUI).x;
-            mouse.y = mouse.downY = e.data.getLocalPosition(appMc.mcUI).y;
+            UpdateMousePosition(e);
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera3d);
+            const intersects = raycaster.intersectObjects(appMc3d["mcPlates"].children, true);
+            if (intersects.length) {
+                let object = null;
+                if (!("isPlate" in intersects[0].object)) {
+                    intersects[0].object.traverseAncestors((ancestor) => {
+                        if (object === null && ancestor.isPlate === true) {
+                            object = ancestor;
+                        }
+                    });
+                } else {
+                    object = intersects[0].object;
+                }
 
-            appMc.mcJoystickCursor.visible = false;
+                if (!(object.plateIndex in plateMapping && Object.keys(plateMapping[object.plateIndex]).length > 0)) {
+                    object = null;
+                }
 
-            appMc.mcJoystick.visible = true;
-            appMc.mcJoystick.x = mouse.x;
-            appMc.mcJoystick.y = mouse.y;
-            appMc.mcJoystickBar.x = 0;
-            appMc.mcJoystickBar.y = 0;
-
+                if (object !== null) {
+                    currentMovement = {
+                        sourceObject: object
+                    };
+                    object.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material.color = new THREE.Color(0x008000);
+                        }
+                    });
+                }
+            }
         }
 
     }
 }
 
 function StageMove(e) {
-    if (stateGame == 1 && mouse.isDown) {
+    if (stateGame == 1 && mouse.isDown && currentMovement !== null) {
+        UpdateMousePosition(e);
 
-        mouse.x = e.data.getLocalPosition(appMc.mcUI).x;
-        mouse.y = e.data.getLocalPosition(appMc.mcUI).y;
-
-        mouse.a = Math.atan2((mouse.y - mouse.downY), (mouse.x - mouse.downX));
-        mouse.d = DistancePointToPoint(mouse.x, mouse.y, mouse.downX, mouse.downY);
-
-        if (mouse.d > 100) {
-            mouse.d = 100;
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, camera3d);
+        const intersects = raycaster.intersectObjects(appMc3d["mcPlates"].children, true);
+        if (intersects.length) {
+            let object = null;
+            if (!("isPlate" in intersects[0].object)) {
+                intersects[0].object.traverseAncestors((ancestor) => {
+                    if (object === null && ancestor.isPlate === true) {
+                        object = ancestor;
+                    }
+                });
+            } else {
+                object = intersects[0].object;
+            }
+            if (object !== null && object !== currentMovement.sourceObject && Object.keys(plateMapping[object.plateIndex] || {}).length < 16) {
+                currentMovement.targetObject = object;
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material.color = new THREE.Color(0x0000FF);
+                    }
+                });
+            }
+        } else {
+            if (currentMovement.targetObject) {
+                currentMovement.targetObject.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material.color = new THREE.Color(0xFFFFFF);
+                    }
+                });
+                delete currentMovement.targetObject;
+            }
         }
-
-        appMc.mcJoystickBar.x = mouse.d * Math.cos(mouse.a);
-        appMc.mcJoystickBar.y = mouse.d * Math.sin(mouse.a);
-
-        //-
-
-        appMc3d["mcMan"].speedToA = mouse.a;
-        appMc3d["mcMan"].state = "Run";
     }
 }
 
 function StageUp(e) {
-    if (stateGame == 1 && mouse.isDown) {
-        appMc3d["mcMan"].state = "Stand";
+    if (stateGame == 1 && mouse.isDown && currentMovement !== null) {
+        if (currentMovement.targetObject && currentMovement.sourceObject) {
+            let sourcePlateIndex = currentMovement.sourceObject.plateIndex;
+            let targetPlateIndex = currentMovement.targetObject.plateIndex;
+            if (Object.keys(plateMapping[targetPlateIndex] || {}).length < 16) {
+                let sourceLastPlaceIndex = Object.keys(plateMapping[sourcePlateIndex]).length - 1;
+                let sourceCommand = appMc3d["mcMan" + plateMapping[sourcePlateIndex][sourceLastPlaceIndex]].command;
+                let targetLastPlaceIndex = Math.max(Object.keys(plateMapping[targetPlateIndex] || {}).length - 1, 0);
+                let targetCommand;
+                if (targetLastPlaceIndex > 0) {
+                    targetCommand = appMc3d["mcMan" + plateMapping[targetPlateIndex][targetLastPlaceIndex]].command;
+                } else {
+                    targetCommand = sourceCommand;
+                }
+                if (sourceCommand == targetCommand) {
+                    for (let i = sourceLastPlaceIndex; i >= 0; i--) {
+                        let manIndex = plateMapping[sourcePlateIndex][i];
+                        let man = appMc3d["mcMan" + manIndex];
+                        if (man.command == sourceCommand) {
+                            man.plateIndex = targetPlateIndex;
+                            if (!menToMove.includes(man)) {
+                                menToMove.push(man);
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    console.log(menToMove);
+                }
+            }
+        }
+        for (let i = 0; i < appMc3d["mcPlates"].children.length; i++) {
+            let mcPlate = appMc3d["mcPlates"].children[i];
+            mcPlate.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.color = new THREE.Color(0xFFFFFF);
+                }
+            });
+        }
+        currentMovement = null;
     }
 
-    appMc.mcJoystick.visible = false;
-
     mouse.isDown = false;
+}
+
+function UpdateMousePosition(event) {
+    let originalEvent = event.data.originalEvent;
+    let target = originalEvent.target;
+    if ("clientX" in event.data.originalEvent) {
+        mouse.x = ((originalEvent.clientX - target.offsetLeft) / target.clientWidth) * 2 - 1;
+        mouse.y = -((originalEvent.clientY - target.offsetTop) / target.clientHeight) * 2 + 1;
+    } else if ("touches" in event.data.originalEvent) {
+        mouse.x = ((originalEvent.touches[0].pageX - target.offsetLeft) / target.clientWidth) * 2 - 1;
+        mouse.y = -((originalEvent.touches[0].pageY - target.offsetTop) / target.clientHeight) * 2 + 1;
+    } else {
+        console.warn("Unable to process event", event);
+    }
 }
 
 //-----------------------------------------------------

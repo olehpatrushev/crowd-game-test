@@ -51,9 +51,9 @@ function InitBasicObj() {
     });
 
     appMc3d["materialManTypeS0"] = new THREE.MeshStandardMaterial({color: 0xFFFF00, emissive: 0x000000, skinning: true});
-    appMc3d["materialManTypeS0"].needsUpdate = true;
     appMc3d["materialManTypeS1"] = new THREE.MeshStandardMaterial({color: 0xFF0000, emissive: 0x000000, skinning: true});
-    appMc3d["materialManTypeS1"].needsUpdate = true;
+
+    appMc3d["materialPlate"] = new THREE.MeshStandardMaterial({color: 0xFFFFFF, emissive: 0x000000});
 
     appMc3d["materialDetect"] = new THREE.MeshLambertMaterial({color: 0xff0000, emissive: 0x000000});
 
@@ -124,27 +124,27 @@ function InitBasicObj() {
     appMc.mcBgOverlay.alpha = 0;
     appMc.mcUI.addChild(appMc.mcBgOverlay);
 
-    //- mcJoystick
-
-    appMc.mcJoystick = new PIXI.Container();
-    appMc.mcJoystick.visible = false;
-    appMc.mcUI.addChild(appMc.mcJoystick);
-
-    appMc.mcJoystickBg = new PIXI.Sprite();
-    appMc.mcJoystickBg.texture = moduleTexture.pixiTextures["ui_joystick_bg"];
-    appMc.mcJoystickBg.anchor.set(0.5, 0.5);
-    appMc.mcJoystick.addChild(appMc.mcJoystickBg);
-
-    appMc.mcJoystickBar = new PIXI.Sprite();
-    appMc.mcJoystickBar.texture = moduleTexture.pixiTextures["ui_joystick_bar"];
-    appMc.mcJoystickBar.anchor.set(0.5, 0.5);
-    appMc.mcJoystick.addChild(appMc.mcJoystickBar);
-
-    appMc.mcJoystickCursor = new PIXI.Sprite();
-    appMc.mcJoystickCursor.texture = moduleTexture.pixiTextures["cursor"];
-    appMc.mcJoystickCursor.anchor.set(0.1, 0.0);
-    appMc.mcJoystickCursor.a = 0;
-    appMc.mcJoystick.addChild(appMc.mcJoystickCursor);
+    // //- mcJoystick
+    //
+    // appMc.mcJoystick = new PIXI.Container();
+    // appMc.mcJoystick.visible = false;
+    // appMc.mcUI.addChild(appMc.mcJoystick);
+    //
+    // appMc.mcJoystickBg = new PIXI.Sprite();
+    // appMc.mcJoystickBg.texture = moduleTexture.pixiTextures["ui_joystick_bg"];
+    // appMc.mcJoystickBg.anchor.set(0.5, 0.5);
+    // appMc.mcJoystick.addChild(appMc.mcJoystickBg);
+    //
+    // appMc.mcJoystickBar = new PIXI.Sprite();
+    // appMc.mcJoystickBar.texture = moduleTexture.pixiTextures["ui_joystick_bar"];
+    // appMc.mcJoystickBar.anchor.set(0.5, 0.5);
+    // appMc.mcJoystick.addChild(appMc.mcJoystickBar);
+    //
+    // // appMc.mcJoystickCursor = new PIXI.Sprite();
+    // // appMc.mcJoystickCursor.texture = moduleTexture.pixiTextures["cursor"];
+    // // appMc.mcJoystickCursor.anchor.set(0.1, 0.0);
+    // // appMc.mcJoystickCursor.a = 0;
+    // // appMc.mcJoystick.addChild(appMc.mcJoystickCursor);
 
     //- mcHelper
 
@@ -274,12 +274,12 @@ function InitBasicObj() {
     //- EVENT
 
     appMc.mcBgOverlay.interactive = true;
-    // appMc.mcBgOverlay.on('pointerdown', StageDown);
-    // appMc.mcBgOverlay.on('pointermove', StageMove);
-    // appMc.mcBgOverlay.on('pointerup', StageUp);
-    // appMc.mcBgOverlay.on('pointerout', StageUp);
-    // appMc.mcBgOverlay.on('pointeroutside', StageUp);
-    // appMc.mcBgOverlay.on('touchendoutside', StageUp);
+    appMc.mcBgOverlay.on('pointerdown', StageDown);
+    appMc.mcBgOverlay.on('pointermove', StageMove);
+    appMc.mcBgOverlay.on('pointerup', StageUp);
+    appMc.mcBgOverlay.on('pointerout', StageUp);
+    appMc.mcBgOverlay.on('pointeroutside', StageUp);
+    appMc.mcBgOverlay.on('touchendoutside', StageUp);
 
     appMc.mcBtnSound.interactive = true;
     appMc.mcBtnSound.on('pointerup', BtnGlobalSound);

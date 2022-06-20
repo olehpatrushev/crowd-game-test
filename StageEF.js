@@ -10,9 +10,14 @@ function StageEF() {
             // 33 - 30 fps
             // 16 - 60 fps
 
-            var i, j, k, d, a;
-            var objTemp;
-            var objTempExtra;
+            for (let i = 0; i < appMc3d["mcMen"].children.length; i++) {
+                let mcMan = appMc3d["mcMen"].children[i];
+                mcMan.mixer.update(timeSpent / 1000 * Math.random());
+            }
+
+            // var i, j, k, d, a;
+            // var objTemp;
+            // var objTempExtra;
             // var objTempHero = appMc3d["mcMan"];
             //
             // objTempHero.mixer.update(timeSpent / 1000);
@@ -184,42 +189,42 @@ function StageEF() {
                 }
             }
 
-            if (appMc.mcJoystickCursor.visible) {
-                objTemp = appMc.mcJoystickCursor;
-                objTemp.a += 10;
-                if (objTemp.a >= 360) {
-                    objTemp.a -= 360;
-                }
-                objTemp.x = 60 * Math.cos(objTemp.a * toRAD);
-                objTemp.y = 60 * Math.sin(objTemp.a * toRAD);
-                objTemp.rotation = 0.1 * Math.sin(objTemp.a * toRAD + 1);
-
-            }
+            // if (appMc.mcJoystickCursor.visible) {
+            //     objTemp = appMc.mcJoystickCursor;
+            //     objTemp.a += 10;
+            //     if (objTemp.a >= 360) {
+            //         objTemp.a -= 360;
+            //     }
+            //     objTemp.x = 60 * Math.cos(objTemp.a * toRAD);
+            //     objTemp.y = 60 * Math.sin(objTemp.a * toRAD);
+            //     objTemp.rotation = 0.1 * Math.sin(objTemp.a * toRAD + 1);
+            //
+            // }
 
             //- CAMERA
 
             objTemp = appMc3d["groupLevelShake"];
 
-            if (objTemp.shakeD > 0) {
-                objTemp.shakeAX += 70;
-                objTemp.shakeAY += 90;
-                if (objTemp.shakeAX >= 360) {
-                    objTemp.shakeAX -= 360;
-                }
-                if (objTemp.shakeAY >= 360) {
-                    objTemp.shakeAY -= 360;
-                }
-
-                objTemp.position.x = 0.1 * objTemp.shakeD * Math.sin(objTemp.shakeAX * toRAD);
-                objTemp.position.z = 0.1 * objTemp.shakeD * Math.sin(objTemp.shakeAY * toRAD);
-
-                objTemp.shakeD *= 0.8;
-                if (objTemp.shakeD < 0.01) {
-                    objTemp.shakeD = 0;
-                }
-            }
-
-            objTemp = appMc3d["groupLevelCamera"];
+            // if (objTemp.shakeD > 0) {
+            //     objTemp.shakeAX += 70;
+            //     objTemp.shakeAY += 90;
+            //     if (objTemp.shakeAX >= 360) {
+            //         objTemp.shakeAX -= 360;
+            //     }
+            //     if (objTemp.shakeAY >= 360) {
+            //         objTemp.shakeAY -= 360;
+            //     }
+            //
+            //     objTemp.position.x = 0.1 * objTemp.shakeD * Math.sin(objTemp.shakeAX * toRAD);
+            //     objTemp.position.z = 0.1 * objTemp.shakeD * Math.sin(objTemp.shakeAY * toRAD);
+            //
+            //     objTemp.shakeD *= 0.8;
+            //     if (objTemp.shakeD < 0.01) {
+            //         objTemp.shakeD = 0;
+            //     }
+            // }
+            //
+            // objTemp = appMc3d["groupLevelCamera"];
 
             // objTemp.to_x = -objTempHero.position.x;
             // objTemp.to_y = -objTempHero.position.y;
