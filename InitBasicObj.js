@@ -24,11 +24,11 @@ function InitBasicObj() {
 
     //- groupDebug3d
 
-    var GridHelper3d = new THREE.GridHelper(100, 10, 0xcccccc, 0xcccccc);
-    var AxesHelper3d = new THREE.AxesHelper(100);
-    AxesHelper3d.position.y = 0.01;
+    // var GridHelper3d = new THREE.GridHelper(100, 10, 0xcccccc, 0xcccccc);
+    // var AxesHelper3d = new THREE.AxesHelper(100);
+    // AxesHelper3d.position.y = 0.01;
     //scene3d.add( GridHelper3d );
-    scene3d.add(AxesHelper3d);
+    // scene3d.add(AxesHelper3d);
 
     //- MATERIALS
 

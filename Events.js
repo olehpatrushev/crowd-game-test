@@ -1,6 +1,5 @@
 const plateMapping = {};
 var currentMovement = null;
-var menToMove = [];
 
 async function LoadModels() {
     await LoadPlateModels();
@@ -113,7 +112,7 @@ function PlaceManToPlate(man, plate) {
         plateMapping[plate.plateIndex] = {};
     } else {
         for (let i = 0; i < 16; i++) {
-            if (!(i in plateMapping[plate.plateIndex]) || plateMapping[plate.plateIndex][i] === null) {
+            if (!(i in plateMapping[plate.plateIndex])) {
                 index = i;
                 placeFree = true;
                 break;
@@ -321,15 +320,13 @@ function StageUp(e) {
                         let manIndex = plateMapping[sourcePlateIndex][i];
                         let man = appMc3d["mcMan" + manIndex];
                         if (man.command == sourceCommand) {
+                            delete plateMapping[sourcePlateIndex][i];
                             man.plateIndex = targetPlateIndex;
-                            if (!menToMove.includes(man)) {
-                                menToMove.push(man);
-                            }
+                            PlaceManToPlate(man, appMc3d["mcPlate" + targetPlateIndex]);
                         } else {
                             break;
                         }
                     }
-                    console.log(menToMove);
                 }
             }
         }
