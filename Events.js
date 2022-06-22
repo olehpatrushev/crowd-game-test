@@ -317,6 +317,9 @@ function StageUp(e) {
                 }
                 if (sourceCommand == targetCommand) {
                     for (let i = sourceLastPlaceIndex; i >= 0; i--) {
+                        if (Object.keys(plateMapping[targetPlateIndex] || {}).length == 16) {
+                            break;
+                        }
                         let manIndex = plateMapping[sourcePlateIndex][i];
                         let man = appMc3d["mcMan" + manIndex];
                         if (man.command == sourceCommand) {
